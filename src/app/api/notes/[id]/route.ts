@@ -23,5 +23,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 }
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  
+  const id = Number(params.id);
+  if (!id) {
+    return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  }
+
+  try {
+
+  } catch (err) { 
+    console.error("Error updating note", err);
+    return NextResponse.json({ error: "Error updating note" }, { status: 500 });
+  }
 }
