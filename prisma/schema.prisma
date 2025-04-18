@@ -19,7 +19,7 @@ model User {
 }        
 model Note{
   id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
   title String?
   content String?

@@ -14,12 +14,15 @@ function NotesPage() {
         content,
         userId: 1,
       })
+
+      if (response.status !== 200) { 
+        throw new Error('Failed to create note')
+      }
       console.log("Success:", response.data);
     }catch (err) {
       console.error('Error creating note', err)
       alert('Error creating note')
     }
-
   }
 
   return (
@@ -37,7 +40,7 @@ function NotesPage() {
         <textarea
           name="content"
           value={content}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => setContent(e.target.value)}
           placeholder="Type..."
         ></textarea>
         <button type="submit">Submit</button>

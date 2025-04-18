@@ -5,6 +5,18 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/app/utils/supabase/server";
 
+export async function logout() {
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.signOut({ scope: "local" });
+
+  if (error) {
+    console.log("Error signing out", error);
+    redirect("/error");
+  }
+  redirect("/login");
+}
+
 export async function login(formData: FormData) {
   const supabase = await createClient();
 
