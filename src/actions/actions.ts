@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
+import type { FormState } from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
+import axios from "axios";
 
 export async function logout() {
   const supabase = await createClient();
@@ -17,7 +18,10 @@ export async function logout() {
   redirect("/login");
 }
 
-export async function login(formData: FormData) {
+export async function login(
+  prev: FormState,
+  formData: FormData
+): Promise<FormState> {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -30,30 +34,60 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect("/error");
+    return {
+      success: false,
+      error: error.message,
+    };
+    //redirect("/error");
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/private");
 }
 
-export async function signup(formData: FormData) {
+export async function signup(
+  prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
   const supabase = await createClient();
 
   // type-casting here for convenience
   // in practice, you should validate your inputs
-  const data = {
+  const credentials = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
-  console.log("data", data);
 
-  const { error } = await supabase.auth.signUp(data);
-  console.log("error", error);
-  if (error) {
-    redirect("/error");
+  try {
+    const { error } = await supabase.auth.signUp(credentials);
+    if (error) {
+      console.log("error", error);
+      return {
+        success: false,
+        error: error.message,
+      };
+      //redirect("/error");
+    }
+    const response = await axios.post(`${process.env.SITE_URL}/api/users/user`, {
+      username: formData.get("username"),
+      ...credentials,
+    });
+    const data = response.data;
+    if (data.success === false) {
+      return {
+        success: false,
+        error: data.error,
+      };
+    }
+  } catch (error) {
+    console.error("Error signing up", error);
+    return {
+      success: false,
+      error: "Error signing up",
+    };
   }
-
+  console.log("user signed up", credentials.email);
+  // if successful, redirect to private page
   revalidatePath("/", "layout");
   redirect("/private");
 }
