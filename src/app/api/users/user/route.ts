@@ -3,18 +3,39 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
 export async function GET(req: Request) {
-  const { email } = await req.json();
-  const user = await prisma.user.findUnique({ where: { email } });
-
-  if (!user) {
+  const email = new URL(req.url).searchParams.get("email");
+  if (!email) {
     return NextResponse.json(
-      { success: false, error: "User not found" },
-      { status: 404 }
+      { success: false, error: "Email is required" },
+      { status: 400 }
     );
   }
-  return NextResponse.json(user);
-}
 
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true, username: true },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, user }, { status: 200 });
+  } catch (err) {
+    console.log("Error during GET request", err);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Internal server error",
+      },
+      { status: 500 }
+    );
+  }
+}
 export async function POST(req: Request) {
   const { email, username, password } = await req.json();
   if (!email || !username || !password) {
@@ -30,7 +51,7 @@ export async function POST(req: Request) {
       console.error("User with that email already exists");
       return NextResponse.json(
         { success: false, error: "User already exists" },
-        { status: 400 }
+        { status: 409 }
       );
     }
 
