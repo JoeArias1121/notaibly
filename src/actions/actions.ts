@@ -10,15 +10,14 @@ import { cookies } from "next/headers";
 export async function logout() {
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signOut({ scope: "local" });
-
+  const { error } = await supabase.auth.signOut();
   if (error) {
     console.log("Error signing out", error);
     redirect("/error");
   }
   redirect("/login");
 }
-
+// TODO: add supabase.auth.signOut if custom user lookup fails, could put cookie creation in a method
 export async function login(
   prev: FormState,
   formData: FormData
@@ -70,19 +69,12 @@ export async function login(
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 365 * 100, // 100 years
+      maxAge: 60 * 60 * 24 * 30, // 30 days
     });
 
     const cookie = cookieStore.get("user_id");
-    if (!cookie) {
-      console.error("Error setting cookie");
-      return {
-        success: false,
-        error: "Error setting cookie",
-      };
-    }
     // cookie is set successfully
-    console.log("Cookie set successfully", cookie.value);
+    console.log("Cookie set successfully", cookie?.value);
     console.log("User logged in successfully", credentials.email);
   } catch (error) {
     console.error("Error fetching user", error);
