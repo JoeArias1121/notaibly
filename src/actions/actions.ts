@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import type { FormState } from "@/types/types";
+import type { FormState, User, UserResponse, APIResponse} from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
 import axios from "axios";
 import { cookies } from "next/headers";
@@ -15,6 +15,8 @@ export async function logout() {
     console.log("Error signing out", error);
     redirect("/error");
   }
+  const cookieStore = await cookies();
+  cookieStore.delete("user_id")
   redirect("/login");
 }
 // TODO: add supabase.auth.signOut if custom user lookup fails, could put cookie creation in a method
@@ -52,7 +54,7 @@ export async function login(
       },
     });
 
-    const data = response.data;
+    const data = response.data as UserResponse;
 
     if (data.success === false) {
       console.error("Error fetching user", data.error);
@@ -124,7 +126,7 @@ export async function signup(
         ...credentials,
       }
     );
-    const data = response.data;
+    const data = response.data as APIResponse;
     if (data.success === false) {
       return {
         success: false,
