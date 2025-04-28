@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Header() {
@@ -11,12 +11,12 @@ export default function Header() {
       </Link>
       <ThemeToggle />
       <nav>
-        <Button asChild>
-          <Link href="/login">Log in</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/signup">Sign Up</Link>
-        </Button>
+        <Link href="/login">
+          <Button>Log In</Button>
+        </Link>
+        <Link href="/signup">
+          <Button>Sign Up</Button>
+        </Link>
       </nav>
     </div>
   );
