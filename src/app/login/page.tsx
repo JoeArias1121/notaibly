@@ -18,13 +18,6 @@ export default function LoginPage() {
       <div className="flex justify-center">
         <form className="flex flex-col gap-3 min-w-1/6" action={formAction}>
           <InputWithLabel
-            id="username"
-            name={"username"}
-            placeholder={"Username"}
-            type={"text"}
-            required={true}
-          />
-          <InputWithLabel
             id="email"
             name={"email"}
             placeholder={"Email"}
