@@ -6,10 +6,11 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export default function Header() {
   return (
     <div className="flex justify-between items-center px-3 bg-lime-700">
-      <Link href="/" className="min-w-1/12 flex">
+      <Link href="/" className="min-w-1/3 flex">
         <h1 className="text-2xl font-bold">Notaibly</h1>
       </Link>
-      <div className="flex justify-end min-w-3/12 gap-3">
+      <Link href="/notes" className="min-w-1/3 flex justify-center font-medium">Notes</Link>
+      <div className="flex justify-end min-w-1/3 gap-3">
         <ThemeToggle />
         <nav className="flex gap-3">
           <Link href="/login">
