@@ -118,7 +118,7 @@ export async function signup(
     if (!process.env.SITE_URL) {
       throw new Error("SITE_URL is not defined in environment variables.");
     }
-
+    // TODO: add cookie for user_id here
     const response = await axios.post(
       `${process.env.SITE_URL}/api/users/user`,
       {
@@ -143,5 +143,5 @@ export async function signup(
   console.log("user signed up", credentials.email);
   // if successful, redirect to private page
   revalidatePath("/", "layout");
-  redirect("/private");
+  redirect("/notes");
 }
