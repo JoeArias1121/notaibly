@@ -36,6 +36,7 @@ export async function login(
   const { error } = await supabase.auth.signInWithPassword(credentials);
 
   if (error) {
+    console.log("Failed supabase login", error);
     return {
       success: false,
       error: error.message,

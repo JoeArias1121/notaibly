@@ -1,11 +1,11 @@
-'use server'
+"use server";
 import axios from "axios";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 export const handleNoteSubmit = async (formData: FormData) => {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -17,7 +17,7 @@ export const handleNoteSubmit = async (formData: FormData) => {
   }
 
   const cookieStore = await cookies();
-  const cookie = cookieStore.get("user_id")
+  const cookie = cookieStore.get("user_id");
   const userId = cookie ? Number(cookie.value) : null;
 
   if (!userId) {
@@ -44,7 +44,7 @@ export const handleNoteSubmit = async (formData: FormData) => {
     console.error("Error creating note", err);
     alert("Error creating note");
   }
-}
+};
 
 export const getNotes = async () => {
   try {
@@ -52,10 +52,40 @@ export const getNotes = async () => {
     if (response.status !== 200) {
       throw new Error("Failed to fetch notes");
     }
-    console.log("Fetched notes:", response.data);
     return response.data;
   } catch (err) {
     console.error("Error fetching notes", err);
     alert("Error fetching notes");
   }
-}
+};
+
+export const getNoteById = async (id: string) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    console.error("User not authenticated");
+    throw new Error("Not signed in");
+  }
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get("user_id");
+  const userId = cookie ? Number(cookie.value) : null;
+  if (!userId) {
+    console.error("User ID not found in cookies");
+    throw new Error("User ID not found in cookies");
+  }
+
+  try {
+    const response = await axios.get(`${process.env.SITE_URL}/api/notes/${id}`, {
+      params: { userId },
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch note");
+    }
+    console.log("Fetched note:", response.data);
+    return response.data;
+  } catch (err) { 
+    console.error("Error fetching note", err);
+  }
+};

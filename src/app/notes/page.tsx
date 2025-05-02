@@ -1,16 +1,16 @@
-import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import NotesForm from "@/app/notes/NotesForm";
 import NotesList from "@/app/notes/NotesList";
 import { handleNoteSubmit, getNotes } from "@/app/notes/actions";
+import { checkUserLoggedIn } from "@/utils/supabase/server";
 
 async function NotesPage() {
   // checking to see if user is logged in
   // if not, redirect to login page
-  const supabase = await createClient();
-  const { data: {user}} = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/login");
+  const loggedIn = await checkUserLoggedIn()
+  if (!loggedIn) {
+    console.log("User not logged in, redirecting to login page");
+    return redirect("/login");
   }
 
   const notes = await getNotes();

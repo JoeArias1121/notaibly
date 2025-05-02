@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -26,4 +27,17 @@ export async function createClient() {
       },
     }
   );
+}
+
+export async function checkUserLoggedIn() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error || user === null) {
+    console.log("Error getting user", error);
+    return false
+  }
+  return true
 }

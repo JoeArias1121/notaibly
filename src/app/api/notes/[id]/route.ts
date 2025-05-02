@@ -3,16 +3,24 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  {params}: { params: { id: string } }
 ) {
+  const { searchParams } = new URL(req.url);
+  const userId = Number(searchParams.get("userId"));
+  //TODO: figure out the params issue
   const id = Number(params.id);
-  if (!id) {
+  if (!id || !userId) {
     return NextResponse.json({ error: "Missing id" }, { status: 400 });
   }
 
   try {
     const note = await prisma.note.findUnique({
-      where: { id },
+      where: { id, userId },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+      }
     });
     if (!note) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
