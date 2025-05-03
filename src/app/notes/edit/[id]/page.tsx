@@ -9,9 +9,9 @@ export default async function NoteEdit({ params }: { params: { id: string } }) {
     return <div>Note not found</div>
   }
   return (
-    <div>
-      <h1>Edit</h1>
+    <div className="flex flex-col items-center gap-4">
+      <h1 className="mt-4 text-3xl">Editting: {` ${note.title}`}</h1>
       <EditNoteForm note={note} handleNoteEdit={handleNoteEdit} />
     </div>
-  )
+  );
 }

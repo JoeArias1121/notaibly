@@ -1,5 +1,7 @@
+'use client";';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { deleteNote } from "@/app/notes/actions";
 
 type Note = {
   id: number;
@@ -22,7 +24,9 @@ export default function NotesList({ notes, ...props }: { notes: Note[] }) {
               <Link href={`/notes/edit/${note.id}`}>
                 <Button>Edit</Button>
               </Link>
-              <Button className="bg-destructive">Delete</Button>
+              <form action={deleteNote.bind(null, note.id)}>
+                <Button className="bg-destructive">Delete</Button>
+              </form>
             </div>
           </div>
         </div>

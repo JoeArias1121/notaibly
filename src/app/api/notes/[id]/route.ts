@@ -68,3 +68,33 @@ export async function PATCH(
     return NextResponse.json({ error: "Error updating note" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const { searchParams } = new URL(req.url);
+  const userId = Number(searchParams.get("userId"));
+  const id = Number(params.id);
+  if (!id || !userId) {
+    return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  }
+
+  try {
+    const deletedNote = await prisma.note.delete({
+      where: { id, userId },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+      }
+    });
+    if (!deletedNote) {
+      return NextResponse.json({ error: "Note not found" }, { status: 404 });
+    }
+    return NextResponse.json(deletedNote);
+  } catch (err) {
+    console.error("Error deleting note", err);
+    return NextResponse.json({ error: "Error deleting note" }, { status: 500 });
+  }
+}

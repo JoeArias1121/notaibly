@@ -17,6 +17,8 @@ export async function logout() {
   }
   const cookieStore = await cookies();
   cookieStore.delete("user_id")
+  console.log("User logged out successfully");
+  console.log("Redirecting to login page");
   redirect("/login");
 }
 // TODO: add supabase.auth.signOut if custom user lookup fails, could put cookie creation in a method
@@ -89,7 +91,7 @@ export async function login(
   // if successful, redirect to private page
 
   revalidatePath("/", "layout");
-  redirect("/private");
+  redirect("/notes");
 }
 
 // TODO:  simplify this server action by creating a service for creating a user and calling the function here

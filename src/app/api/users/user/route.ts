@@ -2,18 +2,26 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
+function emailOrId(email: string | null, id: string | null) {
+  if (email) {
+    return {email};
+  }
+  return { id: Number(id) };
+}
+
 export async function GET(req: Request) {
   const email = new URL(req.url).searchParams.get("email");
-  if (!email) {
+  const userId = new URL(req.url).searchParams.get("userId");
+  if (!email && !userId) {
     return NextResponse.json(
-      { success: false, error: "Email is required" },
+      { success: false, error: "Missing credentials" },
       { status: 400 }
     );
   }
 
   try {
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: emailOrId(email, userId),
       select: { id: true, email: true, username: true },
     });
 

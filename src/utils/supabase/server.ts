@@ -1,4 +1,6 @@
+import { UserResponse } from "@/types/types";
 import { createServerClient } from "@supabase/ssr";
+import axios from "axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -41,3 +43,38 @@ export async function checkUserLoggedIn() {
   }
   return true
 }
+
+export async function getUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error) {
+    console.log("No user authenticated yet");
+    return null
+  }
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("user_id")?.value;
+  if (!userId) {
+    console.log("No user id found in cookies")
+    return null
+  }
+  try {
+    const response = await axios.get(`${process.env.SITE_URL}/api/users/user`, {
+      params: {
+        userId: userId,
+      },
+    })
+    const data = response.data as UserResponse;
+    if (data.success === false) {
+      console.error("Error fetching user", data.error);
+      return null
+    }
+    return data.user
+  } catch (err) { 
+    console.error("Error fetching user", err);
+    return null
+  }
+}
+

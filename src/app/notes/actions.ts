@@ -128,3 +128,37 @@ export const getNoteById = async (id: string) => {
     console.error("Error fetching note", err);
   }
 };
+
+export const deleteNote = async (id: number) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    console.error("User not authenticated");
+    throw new Error("Not signed in");
+  }
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get("user_id");
+  const userId = cookie ? Number(cookie.value) : null;
+  if (!userId) {
+    console.error("User ID not found in cookies");
+    throw new Error("User ID not found in cookies");
+  }
+
+  try {
+    const response = await axios.delete(
+      `${process.env.SITE_URL}/api/notes/${id}`,
+      {
+        params: { userId },
+      }
+    );
+    if (response.status !== 200) {
+      throw new Error("Failed to delete note");
+    }
+    console.log("Deleted note:", response.data);
+    revalidatePath("/notes");
+  } catch (err) {
+    console.error("Error deleting note", err);
+  }
+};

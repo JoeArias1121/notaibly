@@ -16,7 +16,7 @@ export default async function NoteView({ params }: { params: { id: string } }) {
   const note = await getNoteById(id);
 
   return (
-    <div>
+    <div className="flex flex-col items-center gap-4">
       <Note note={note} />
     </div>
   );
