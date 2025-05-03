@@ -11,6 +11,7 @@ export function InputWithLabel({name, placeholder, type, ...props}: React.Compon
         placeholder={placeholder}
         type={type}
         required={props.required!!}
+        {...props}
       />
     </div>
   );

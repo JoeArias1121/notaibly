@@ -1,23 +1,28 @@
-"use client";
+'use client'
 import { useState } from "react";
 import { InputWithLabel } from "@/components/ui/input-with-label";
 import { Button } from "@/components/ui/button";
 import { TextareaWithLabel } from "@/components/ui/textarea-with-label";
 
 type Props = {
-  handleNoteSubmit: (formData: FormData) => Promise<void>;
+  handleNoteEdit: (formData: FormData, id: number) => Promise<void>;
+  note: {
+    id: number;
+    title: string;
+    content: string;
+  };
 };
 
-export default function NotesForm({ handleNoteSubmit }: Props) {
-  const [content, setContent] = useState("");
-  const [title, setTitle] = useState("");
+export default function EditNoteForm({ handleNoteEdit, note }: Props) {
+  const [content, setContent] = useState(note.content);
+  const [title, setTitle] = useState(note.title);
+  console.log("content", content);
+  console.log("title", title);
   return (
     <form
       className="flex flex-col min-w-1/2 gap-3 justify-center items-center "
       action={async (formData) => {
-        await handleNoteSubmit(formData);
-        setContent("");
-        setTitle("");
+        await handleNoteEdit(formData, note.id);
       }}
     >
       <InputWithLabel
@@ -37,7 +42,7 @@ export default function NotesForm({ handleNoteSubmit }: Props) {
         placeholder="Type..."
         required={true}
       />
-      <Button type="submit">Submit</Button>
+      <Button type="submit">Submit Changes</Button>
     </form>
   );
 }

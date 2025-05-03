@@ -46,6 +46,42 @@ export const handleNoteSubmit = async (formData: FormData) => {
   }
 };
 
+export const handleNoteEdit = async (formData: FormData, id: number) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    console.error("User not authenticated");
+    throw new Error("Not authenticated");
+  }
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get("user_id");
+  const userId = cookie ? cookie.value : null;
+
+  const title = formData.get("title") as string;
+  const content = formData.get("content") as string;
+  try {
+    const response = await axios.patch(
+      `${process.env.SITE_URL}/api/notes/${id}`,
+      {
+        title,
+        content,
+      },
+      {
+        params: { userId },
+      }
+    );
+    if (response.status !== 200) {
+      throw new Error(`Failed to update note, response: ${response.status}`);
+    }
+    console.log("Success updating note:", response.data);
+    return response.data;
+  } catch (err) {
+    console.error("Error updating note", err);
+  }
+};
+
 export const getNotes = async () => {
   try {
     const response = await axios.get(`${process.env.SITE_URL}/api/notes`);
@@ -77,15 +113,18 @@ export const getNoteById = async (id: string) => {
   }
 
   try {
-    const response = await axios.get(`${process.env.SITE_URL}/api/notes/${id}`, {
-      params: { userId },
-    });
+    const response = await axios.get(
+      `${process.env.SITE_URL}/api/notes/${id}`,
+      {
+        params: { userId },
+      }
+    );
     if (response.status !== 200) {
       throw new Error("Failed to fetch note");
     }
     console.log("Fetched note:", response.data);
     return response.data;
-  } catch (err) { 
+  } catch (err) {
     console.error("Error fetching note", err);
   }
 };
