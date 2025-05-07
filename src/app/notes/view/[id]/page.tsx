@@ -3,6 +3,7 @@ import { getNoteById } from "@/app/notes/actions";
 import { checkUserLoggedIn } from "@/utils/supabase/server";
 import Note from "@/app/notes/view/[id]/Note";
 import { redirect } from "next/navigation";
+import { summarize } from '@/app/notes/actions'
 
 export default async function NoteView({ params }: { params: { id: string } }) {
   // checking to see if user is logged in
@@ -17,7 +18,7 @@ export default async function NoteView({ params }: { params: { id: string } }) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Note note={note} />
+      <Note note={note} summarize={summarize} />
     </div>
   );
 }

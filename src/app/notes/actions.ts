@@ -2,7 +2,16 @@
 import axios from "axios";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getSummary } from "@/lib/openai";
 import { cookies } from "next/headers";
+
+export const summarize = async (text: string) => { 
+  const summary = await getSummary(text);
+  if (!summary) {
+    return "Error getting summary"
+  }
+  return summary;
+}
 
 export const handleNoteSubmit = async (formData: FormData) => {
   const supabase = await createClient();
