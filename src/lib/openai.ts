@@ -5,7 +5,7 @@ export async function getSummary(text: string) {
   const response = await client.responses.create({
     model: "gpt-4.1-mini",
     instructions:
-      "Give very quick summary of the following and also make a bulleted list of the main points.",
+      "Give very quick summary of the following and also make a bulleted list of the main points. If it is too short to give a proper summary, just say 'Too short to summarize'",
     input: text,
   });
   if (response.error) {
