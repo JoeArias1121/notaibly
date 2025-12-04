@@ -1,10 +1,21 @@
+"use client";
+
+import { FormState, signUpUserAction } from '@/src/actions/authActions';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input';
 import { Label } from '@/src/components/ui/label';
-import React from 'react'
+import {useActionState} from 'react'
+import { useFormStatus } from 'react-dom';
 
-export default function page() {
+const initialState: FormState = {
+  success: false,
+  message: "",
+};
+
+
+export default function Page() {
+  const [state, signUpAction] = useActionState(signUpUserAction, initialState);
   return (
     <div>
       <Card>
@@ -12,7 +23,7 @@ export default function page() {
           <CardTitle>Sign up and create your account</CardTitle>
         </CardHeader>
         <CardContent>
-          <form>
+          <form id="signup-form" action={signUpAction}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -39,11 +50,14 @@ export default function page() {
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full">
-            Create Account
-          </Button>
+          <SubmitButton />
         </CardFooter>
       </Card>
     </div>
   );
+}
+
+function SubmitButton() {
+  const status = useFormStatus();
+  return <Button form="signup-form" disabled={status.pending} type="submit" className="w-full">Submit</Button>
 }
